@@ -1,39 +1,49 @@
-# Socioeconomic Status and Academic Achievement in PISA 2022
+# Predicting Student Achievement from Socioeconomic Status: LASSO + KNN on PISA 2022
 
-An end-to-end R pipeline examining how socioeconomic status (SES) relates to 15-year-olds' math, reading, and science performance across 79 countries in the OECD PISA 2022 dataset (N ≈ 614,000 students).
+Machine learning pipeline in R that predicts 15-year-olds' math, reading, and science scores from home and family background variables in the OECD PISA 2022 dataset (79 countries, N ≈ 614,000 students).
 
-**Question:** Which home and family background factors best predict achievement, and how well can SES indicators alone predict a student's scores?
+**Task:** Given ~40 socioeconomic survey items, (1) select the features that matter and (2) predict a student's test scores.
+
+**Approach:** LASSO regression for feature selection → KNN regression for prediction, with 10-fold cross-validation and held-out test evaluation.
+
+## Results
+
+| Subject | RMSE | R² | MAE |
+|---------|------|----|-----|
+| Math | 52.6 | **0.689** | 42.2 |
+| Reading | 63.5 | **0.676** | 50.2 |
+| Science | 58.5 | **0.717** | 47.0 |
+
+Socioeconomic indicators alone explain roughly 70% of score variance (U.S. test set; PISA scores have SD ≈ 100).
+
+**Feature selection:** LASSO retained parental doctoral education as the strongest positive predictor in all three subjects; digital device ownership had a consistent negative coefficient.
+
+| LASSO cross-validation (math) | KNN residuals (math) |
+|---|---|
+| ![LASSO math](plots/lasso_math.png) | ![Residual math](plots/residual_math.png) |
 
 ## Pipeline
 
 | Step | Script | What it does |
 |------|--------|--------------|
 | 1 | `R/01_data_prep_eda.R` | Converts the 1.95 GB SPSS file to RDS, filters variables by missingness, imputes ESCS at the country level, computes summary statistics and correlations |
-| 2 | `R/02_visualization.R` | ESCS distribution by country; world maps of mean math, reading, and science scores; interactive Plotly versions ([live demo on RPubs](https://rpubs.com/RumeysaGorgulu/pisa2022-visualization)) |
-| 3 | `R/03_modeling.R` | LASSO regression (10-fold CV) to select the strongest SES predictors; KNN regression to predict scores for U.S. students; evaluation with RMSE, R², MAE, and residual plots |
+| 2 | `R/02_visualization.R` | ESCS distribution by country; world maps of mean scores; interactive Plotly versions ([live demo](https://rpubs.com/RumeysaGorgulu/pisa2022-visualization)) |
+| 3 | `R/03_modeling.R` | LASSO (`glmnet`, λ by 10-fold CV MSE) per subject → KNN regression (`tidymodels` + `kknn`, k tuned by 10-fold CV) → RMSE / R² / MAE on held-out test set + residual plots |
 
-## Key findings
+## Methods
 
-- Parental doctoral education was the strongest positive predictor of achievement in all three subjects; digital device ownership showed a consistent negative association.
-- SES indicators alone explain roughly 70% of score variance in the U.S. sample.
+- **Preprocessing:** threshold-based removal of high-missingness variables; country-level mean imputation of the ESCS index.
+- **Feature selection:** L1-regularized regression; λ chosen at minimum cross-validated MSE, run separately for math, reading, and science.
+- **Prediction:** KNN regression on LASSO-selected features; k tuned via 10-fold CV; train/test split on U.S. sample.
+- **Evaluation:** RMSE, R², MAE; residual-vs-fitted plots to check for systematic error.
 
-| Subject | RMSE | R² | MAE |
-|---------|------|----|-----|
-| Math | 52.6 | 0.689 | 42.2 |
-| Reading | 63.5 | 0.676 | 50.2 |
-| Science | 58.5 | 0.717 | 47.0 |
-
-## Figures
+## Exploratory figures
 
 | ESCS by country | Mean math score by country |
 |---|---|
 | ![ESCS boxplot](plots/escs_boxplot.png) | ![Math map](plots/map_math.png) |
 
-| LASSO cross-validation (math) | KNN residuals (math) |
-|---|---|
-| ![LASSO math](plots/lasso_math.png) | ![Residual math](plots/residual_math.png) |
-
-Reading and science versions of each plot are in `plots/`.
+Reading and science versions of every plot are in `plots/`.
 
 ## Reproducing
 
@@ -43,15 +53,9 @@ Reading and science versions of each plot are in `plots/`.
    install.packages(c("haven", "tidyverse", "stringr", "ggplot2", "plotly",
                       "countrycode", "htmlwidgets", "glmnet", "tidymodels", "kknn"))
    ```
-3. From the repository root, run the scripts in order: `01_data_prep_eda.R` → `02_visualization.R` → `03_modeling.R`.
+3. From the repository root, run `R/01_data_prep_eda.R` → `R/02_visualization.R` → `R/03_modeling.R`.
 
-Intermediate data files are written to `data/` and are git-ignored; figures are written to `plots/`.
-
-## Methods summary
-
-- **Data preparation:** threshold-based removal of high-missingness variables; country-level mean imputation of the ESCS index.
-- **Variable selection:** LASSO with λ chosen by 10-fold cross-validated MSE, run separately per subject.
-- **Prediction:** KNN regression via `tidymodels`, k tuned by 10-fold CV, evaluated on a held-out test set.
+Intermediate data are written to `data/` (git-ignored); figures to `plots/`.
 
 ## License
 
