@@ -1,0 +1,4 @@
+step,n,countries,escs_imputed_pct
+All students,613744,80,NA
+Excluding Costa Rica (no ESCS),607631,79,3.19
+Excluding students missing > 14 items,558233,79,NA

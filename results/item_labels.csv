@@ -1,0 +1,43 @@
+item,label
+ST250Q01JA,Which of the following are in your [home]: A room of your own
+ST250Q02JA,"Which of the following are in your [home]: A computer (laptop, desktop, or tablet) that you can use for school work"
+ST250Q03JA,Which of the following are in your [home]: Educational Software or Apps
+ST250Q04JA,Which of the following are in your [home]: Your own [cell phone] with Internet access (e.g. smartphone)
+ST250Q05JA,Which of the following are in your [home]: Internet access (e.g. Wi-fi) (excluding through smartphones)
+ST251Q01JA,"How many of these items are there at your [home]: Cars, vans, or trucks"
+ST251Q02JA,How many of these items are there at your [home]: Mopeds or motorcycles
+ST251Q03JA,How many of these items are there at your [home]: Rooms with a bath or shower
+ST251Q04JA,How many of these items are there at your [home]: Rooms with a [flush toilet]
+ST251Q06JA,"How many of these items are there at your [home]: Musical instruments (e.g. guitar, piano, [country-specific example])"
+ST251Q07JA,"How many of these items are there at your [home]: Works of art (e.g. paintings, sculptures, [country-specific example])"
+ST253Q01JA,How many [digital devices] with screens are there in your [home]?
+ST254Q01JA,How many of the following [digital devices] are in your [home]: Televisions
+ST254Q02JA,How many of the following [digital devices] are in your [home]: Desktop computers
+ST254Q03JA,How many of the following [digital devices] are in your [home]: Laptop computers or notebooks
+ST254Q04JA,"How many of the following [digital devices] are in your [home]: Tablets (e.g. [iPad®], [BlackBerry® Playbook™])"
+ST254Q05JA,"How many of the following [digital devices] are in your [home]: E-book readers (e.g. [Kindle™], [Kobo], [Bookeen])"
+ST254Q06JA,How many of the following [digital devices] are in your [home]: [Cell phones] with Internet access (i.e. smartphones)
+ST255Q01JA,How many books are there in your [home]?
+ST256Q01JA,"How many of these books at [home]: Religious books (e.g. [Bible], [Example 2])"
+ST256Q02JA,"How many of these books at [home]: Classical literature (e.g. [Shakespeare], [Example 2])"
+ST256Q03JA,How many of these books at [home]: Contemporary literature
+ST256Q06JA,How many of these books at [home]: Books on science
+ST256Q07JA,"How many of these books at [home]: Books on art, music, or design"
+ST256Q08JA,How many of these books at [home]: [Technical reference books]
+ST256Q09JA,How many of these books at [home]: Dictionaries
+ST256Q10JA,How many of these books at [home]: Books to help with your school work
+ST005Q01JA,What is the [highest level of schooling] completed by your mother?
+ST006Q01JA,Does your mother have any of the following qualifications: [ISCED level 8]
+ST006Q02JA,Does your mother have any of the following qualifications: [ISCED level 7]
+ST006Q03JA,Does your mother have any of the following qualifications: [ISCED level 6]
+ST006Q04JA,Does your mother have any of the following qualifications: [ISCED level 5]
+ST006Q05JA,Does your mother have any of the following qualifications: [ISCED level 4]
+ST007Q01JA,What is the [highest level of schooling] completed by your father?
+ST008Q01JA,Does your father have any of the following qualifications: [ISCED level 8]
+ST008Q02JA,Does your father have any of the following qualifications: [ISCED level 7]
+ST008Q03JA,Does your father have any of the following qualifications: [ISCED level 6]
+ST008Q04JA,Does your father have any of the following qualifications: [ISCED level 5]
+ST008Q05JA,Does your father have any of the following qualifications: [ISCED level 4]
+ST258Q01JA,"In the past 30 days, how often did you not eat because there was not enough money to buy food?"
+ST259Q01JA,Now think about where you would place your family on this scale. Where would you say your family stands at this time?
+ST259Q02JA,Now think about where you would place your family on this scale. Where do you think you will stand when you are 30?

@@ -1,65 +1,83 @@
-# Predicting Student Achievement from Socioeconomic Status: LASSO + KNN on PISA 2022
+# How Much Does Family Background Predict Achievement? LASSO + KNN on PISA 2022
 
-Machine learning pipeline in R that predicts 15-year-olds' math, reading, and science scores from home and family background variables in the OECD PISA 2022 dataset (79 countries, N ≈ 614,000 students).
+R pipeline that measures how well socioeconomic (SES) survey items predict 15-year-olds' math, reading and science scores in the OECD PISA 2022 data (80 education systems, ~614,000 students), and which items matter most.
 
-**Task:** Given ~40 socioeconomic survey items, (1) select the features that matter and (2) predict a student's test scores.
+**Question:** How much achievement variance can home and family background items predict on unseen students, and does a non-linear model (KNN) predict better than a linear one?
 
-**Approach:** LASSO regression for feature selection → KNN regression for prediction, with 10-fold cross-validation and held-out test evaluation.
+**Design**
+- **Data:** ~40 SES survey items (home possessions, books, parental education and occupation, food insecurity)
+- **Sample:** U.S. students, with a fixed 80/20 train/test split
+- **Feature selection:** LASSO, 10-fold CV, λ = 1se
+- **Models compared:** OLS on ESCS only, OLS on the LASSO-selected items, and KNN on the same items (k tuned by 10-fold CV)
+- **Plausible values:** every model is fit once per plausible value (PV1–PV10) and the metrics are averaged across the 10 runs, following standard practice for PISA scores
 
-## Results
+## Results (U.S. test set)
 
-| Subject | RMSE | R² | MAE |
-|---------|------|----|-----|
-| Math | 52.6 | **0.689** | 42.2 |
-| Reading | 63.5 | **0.676** | 50.2 |
-| Science | 58.5 | **0.717** | 47.0 |
+<!-- Paste the contents of results/results_table.md here after running R/03_modeling.R -->
 
-Socioeconomic indicators alone explain roughly 70% of score variance (U.S. test set; PISA scores have SD ≈ 100).
+| Subject | Model | R² | RMSE | MAE |
+|---|---|---|---|---|
+| Math | OLS: ESCS only | … | … | … |
+| Math | OLS: selected items | … | … | … |
+| Math | KNN: selected items | … | … | … |
 
-**Feature selection:** LASSO retained parental doctoral education as the strongest positive predictor in all three subjects; digital device ownership had a consistent negative coefficient.
+Values are means across the 10 plausible values, with the min–max range in parentheses. PISA scores have SD ≈ 100.
 
-| LASSO cross-validation (math) | KNN residuals (math) |
+**Key findings** <!-- Write 2–3 bullets from your own numbers, e.g.: -->
+- SES items explain about __% of score variance in held-out students, versus __% for the ESCS index alone.
+- KNN does / does not improve on the linear model, suggesting that the SES–achievement relation is mostly additive / has non-linear structure.
+- The items selected most consistently are: __ (see `results/lasso_selection.csv`).
+
+| Model comparison | Top LASSO items (math) |
 |---|---|
-| ![LASSO math](plots/lasso_math.png) | ![Residual math](plots/residual_math.png) |
+| ![R² comparison](plots/model_comparison_r2.png) | ![Top items](plots/lasso_top_items_math.png) |
 
 ## Pipeline
 
 | Step | Script | What it does |
 |------|--------|--------------|
-| 1 | `R/01_data_prep_eda.R` | Converts the 1.95 GB SPSS file to RDS, filters variables by missingness, imputes ESCS at the country level, computes summary statistics and correlations |
-| 2 | `R/02_visualization.R` | ESCS distribution by country; world maps of mean scores; interactive Plotly versions ([live demo](https://rpubs.com/RumeysaGorgulu/pisa2022-visualization)) |
-| 3 | `R/03_modeling.R` | LASSO (`glmnet`, λ by 10-fold CV MSE) per subject → KNN regression (`tidymodels` + `kknn`, k tuned by 10-fold CV) → RMSE / R² / MAE on held-out test set + residual plots |
+| 1 | `R/01_data_prep_eda.R` | Converts the 2 GB SPSS file to RDS. Handles missing data (excludes students missing more than 14 items; imputes the rest with country item means; imputes ESCS with country means; excludes Costa Rica, which has no ESCS). Computes weighted country statistics over all 10 PVs. |
+| 2 | `R/02_visualization.R` | ESCS distribution by country; world maps of weighted country mean scores; country-level ESCS vs. math scatter; interactive Plotly versions |
+| 3 | `R/03_modeling.R` | Per subject × PV: LASSO selection, then OLS / KNN fit and test-set scoring; pooled metrics, LASSO selection frequencies, figures, and a Markdown results table |
 
-## Methods
+Outputs go to `results/` (CSV tables) and `plots/` (figures).
 
-- **Preprocessing:** threshold-based removal of high-missingness variables; country-level mean imputation of the ESCS index.
-- **Feature selection:** L1-regularized regression; λ chosen at minimum cross-validated MSE, run separately for math, reading, and science.
-- **Prediction:** KNN regression on LASSO-selected features; k tuned via 10-fold CV; train/test split on U.S. sample.
-- **Evaluation:** RMSE, R², MAE; residual-vs-fitted plots to check for systematic error.
-
-## Exploratory figures
-
-| ESCS by country | Mean math score by country |
-|---|---|
-| ![ESCS boxplot](plots/escs_boxplot.png) | ![Math map](plots/map_math.png) |
-
-Reading and science versions of every plot are in `plots/`.
+## Methodological notes
+- **Plausible values:** PVs are never averaged per student. Averaging understates measurement error and inflates R².
+- **No leakage:** only SES items (or ESCS) are used as predictors. Other subjects' scores, student IDs and weights are excluded.
+- **R²** is reported as 1 − SSE/SST on the test set (`yardstick::rsq_trad`), not as a squared correlation.
+- **Weights:** country descriptive statistics use the final student weight `W_FSTUWT`. The predictive models are unweighted, because the goal is prediction accuracy on the sample, not population inference.
+- **Limitations:**
+  - Mean imputation of survey items shrinks their variance
+  - Results come from a single train/test split, and the models are fit to U.S. data only
 
 ## Reproducing
 
 1. Download the PISA 2022 Student Questionnaire (SPSS) from https://www.oecd.org/pisa/data/ and place `CY08MSP_STU_QQQ.SAV` in `data/`.
 2. Install dependencies:
    ```r
-   install.packages(c("haven", "tidyverse", "stringr", "ggplot2", "plotly",
-                      "countrycode", "htmlwidgets", "glmnet", "tidymodels", "kknn"))
+   install.packages(c("haven", "tidyverse", "glmnet", "tidymodels", "kknn",
+                      "countrycode", "maps", "plotly", "htmlwidgets"))
    ```
-3. From the repository root, run `R/01_data_prep_eda.R` → `R/02_visualization.R` → `R/03_modeling.R`.
+3. From the repository root, run:
+   ```
+   Rscript R/01_data_prep_eda.R
+   Rscript R/02_visualization.R
+   Rscript R/03_modeling.R
+   ```
+   Step 3 takes about 10–20 minutes.
 
-Intermediate data are written to `data/` (git-ignored); figures to `plots/`.
+## Changelog
+- **v2:**
+  - Fixed target leakage: an earlier version let the KNN models use the other subjects' scores as predictors, which inflated R² to about 0.7
+  - Models are now fit per plausible value
+  - The KNN now uses the LASSO-selected items
+  - Maps now show weighted country means
+  - Added linear baselines
 
 ## License
 
-MIT — see `LICENSE`.
+MIT, see `LICENSE`.
 
 ## Author
 

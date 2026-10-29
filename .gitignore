@@ -52,3 +52,4 @@ rsconnect/
 data/*
 !data/README.md
 *.html
+plots/*_files/
