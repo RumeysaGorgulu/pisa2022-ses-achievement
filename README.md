@@ -13,20 +13,25 @@ R pipeline that measures how well socioeconomic (SES) survey items predict 15-ye
 
 ## Results (U.S. test set)
 
-<!-- Paste the contents of results/results_table.md here after running R/03_modeling.R -->
-
 | Subject | Model | R² | RMSE | MAE |
 |---|---|---|---|---|
-| Math | OLS: ESCS only | … | … | … |
-| Math | OLS: selected items | … | … | … |
-| Math | KNN: selected items | … | … | … |
+| Math | OLS: ESCS only | 0.166 (0.155–0.173) | 86.4 (83.8–87.7) | 69.4 (67.1–70.9) |
+| Math | OLS: selected items | 0.378 (0.360–0.390) | 74.6 (72.0–76.6) | 59.2 (57.4–61.2) |
+| Math | KNN: selected items | 0.336 (0.316–0.361) | 77.1 (73.7–78.9) | 61.4 (58.9–62.7) |
+| Reading | OLS: ESCS only | 0.124 (0.115–0.132) | 101.8 (99.0–104.2) | 81.3 (79.3–82.4) |
+| Reading | OLS: selected items | 0.373 (0.356–0.386) | 86.1 (83.5–88.6) | 68.1 (65.7–70.0) |
+| Reading | KNN: selected items | 0.319 (0.302–0.339) | 89.8 (86.4–92.1) | 70.9 (68.5–72.6) |
+| Science | OLS: ESCS only | 0.149 (0.143–0.163) | 99.5 (97.2–101.5) | 80.6 (78.6–82.7) |
+| Science | OLS: selected items | 0.388 (0.379–0.404) | 84.4 (81.7–86.4) | 66.6 (64.4–68.7) |
+| Science | KNN: selected items | 0.331 (0.320–0.363) | 88.2 (84.5–90.3) | 70.2 (67.1–72.1) |
 
 Values are means across the 10 plausible values, with the min–max range in parentheses. PISA scores have SD ≈ 100.
 
-**Key findings** <!-- Write 2–3 bullets from your own numbers, e.g.: -->
-- SES items explain about __% of score variance in held-out students, versus __% for the ESCS index alone.
-- KNN does / does not improve on the linear model, suggesting that the SES–achievement relation is mostly additive / has non-linear structure.
-- The items selected most consistently are: __ (see `results/lasso_selection.csv`).
+**Key findings**
+
+- **The composite index misses a lot:** SES items explain about 37–39% of score variance in held-out U.S. students, versus 12–17% for the ESCS index alone.
+- **KNN does not improve on the linear model** (R² 0.32–0.34 vs. 0.37–0.39), suggesting that the SES–achievement relation is mostly additive.
+- **Results are stable across plausible values:** the R² range across PV1–PV10 is about ±0.02, so the conclusions do not depend on which plausible value is used.
 
 | Model comparison | Top LASSO items (math) |
 |---|---|
