@@ -17,7 +17,7 @@ dir.create("plots", showWarnings = FALSE)
 analysis_data   <- readRDS("data/analysis_data.rds")
 country_summary <- read_csv("results/country_summary.csv", show_col_types = FALSE)
 
-# 1. ESCS by country (ordered by median) -------------------------------------
+# 1. ESCS by country (ordered by median)
 
 escs_plot <- analysis_data %>%
   mutate(CNT = fct_reorder(CNT, ESCS, .fun = median)) %>%
@@ -37,7 +37,7 @@ tryCatch(
   error = function(e) message("Skipped interactive boxplot: ", conditionMessage(e))
 )
 
-# 2. World maps of country means ---------------------------------------------
+# 2. World maps of country means 
 # Country means are weighted and averaged over the 10 plausible values
 # (computed in 01). Map regions are matched to PISA country codes via ISO3.
 # PISA codes that are not ISO3: TAP = Chinese Taipei, KSV = Kosovo,
@@ -89,7 +89,7 @@ for (col in names(subjects)) {
   )
 }
 
-# 3. ESCS vs mean math score (country level) ---------------------------------
+# 3. ESCS vs mean math score (country level) 
 
 p_scatter <- ggplot(country_summary, aes(escs_mean, math_mean)) +
   geom_smooth(method = "lm", formula = y ~ x, color = "grey50", se = FALSE,
