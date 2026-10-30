@@ -18,7 +18,7 @@ suppressPackageStartupMessages({
 dir.create("plots",   showWarnings = FALSE)
 dir.create("results", showWarnings = FALSE)
 
-# 1. Load data ---------------------------------------------------------------
+# 1. Load data 
 # The SPSS file is ~2 GB; it is converted to RDS once for faster reloading.
 
 raw_path <- "data/CY08MSP_STU_QQQ.SAV"
@@ -32,7 +32,7 @@ if (file.exists(rds_path)) {
   saveRDS(pisa, rds_path)
 }
 
-# 2. Select variables ---------------------------------------------------------
+# 2. Select variables 
 # - 10 plausible values (PVs) per subject are kept separately. PVs are random
 #   draws from each student's proficiency distribution; analyses are run once
 #   per PV and the results combined, rather than averaging PVs per student
@@ -64,7 +64,7 @@ rm(pisa); invisible(gc())
 prep_log <- tibble(step = "All students", n = nrow(variables),
                    countries = n_distinct(variables$CNT))
 
-# 3. Clean --------------------------------------------------------------------
+# 3. Clean 
 # Costa Rica has no ESCS values at all, so it is excluded.
 variables <- variables %>% filter(CNT != "CRI")
 
@@ -83,7 +83,7 @@ variables <- variables %>%
 prep_log <- add_row(prep_log, step = "Excluding Costa Rica (no ESCS)",
                     n = nrow(variables), countries = n_distinct(variables$CNT))
 
-# 4. Missing survey items -----------------------------------------------------
+# 4. Missing survey items 
 # Students missing more than 14 SES items are excluded; remaining item-level
 # gaps are filled with the country mean of that item.
 
@@ -129,7 +129,7 @@ print(prep_log)
 
 saveRDS(analysis_data, "data/analysis_data.rds")
 
-# 5. Exploratory analysis -----------------------------------------------------
+# 5. Exploratory analysis
 # Country statistics are weighted (W_FSTUWT). For scores, each statistic is
 # computed separately for each of the 10 PVs and then averaged.
 
