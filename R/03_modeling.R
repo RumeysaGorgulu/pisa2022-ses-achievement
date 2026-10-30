@@ -66,7 +66,7 @@ for (subj in names(subjects)) {
     y <- paste0("PV", pv, subj)
     message(sprintf("%s, PV%d", subjects[[subj]], pv))
 
-    # 1. LASSO selection ------------------------------------------------------
+    # 1. LASSO selection 
     cv_fit <- cv.glmnet(X_train, train[[y]], alpha = 1, foldid = foldid)
     b <- coef(cv_fit, s = "lambda.1se")[-1, 1]
     selected <- names(b)[b != 0]
@@ -83,13 +83,13 @@ for (subj in names(subjects)) {
       dev.off()
     }
 
-    # 2a. OLS, ESCS only ------------------------------------------------------
+    # 2a. OLS, ESCS only 
     m_escs <- lm(reformulate("ESCS", y), data = train)
 
-    # 2b. OLS, selected items -------------------------------------------------
+    # 2b. OLS, selected items 
     m_ols <- lm(reformulate(selected, y), data = train)
 
-    # 2c. KNN, selected items -------------------------------------------------
+    # 2c. KNN, selected items 
     rec <- recipe(reformulate(selected, y), data = train[c(y, selected)]) %>%
       step_normalize(all_predictors())
     wf <- workflow() %>%
@@ -103,7 +103,7 @@ for (subj in names(subjects)) {
     best_k_all[[length(best_k_all) + 1]] <-
       tibble(subject = subj, pv = pv, best_k = best$neighbors)
 
-    # 3. Test-set evaluation ------------------------------------------------
+    # 3. Test-set evaluation 
     preds <- list(
       "OLS: ESCS only"      = predict(m_escs, test),
       "OLS: selected items" = predict(m_ols, test),
@@ -132,7 +132,7 @@ for (subj in names(subjects)) {
   }
 }
 
-# 4. Combine across plausible values -----------------------------------------
+# 4. Combine across plausible values 
 
 metrics_by_pv <- bind_rows(metrics_all)
 write_csv(metrics_by_pv, "results/metrics_by_pv.csv")
@@ -156,7 +156,7 @@ selection <- bind_rows(selection_all) %>%
   arrange(subject, desc(abs(mean_coef)))
 write_csv(selection, "results/lasso_selection.csv")
 
-# 5. Figures for the README ---------------------------------------------------
+# 5. Figures for the README
 
 model_levels <- c("OLS: ESCS only", "OLS: selected items", "KNN: selected items")
 
@@ -192,8 +192,7 @@ p_coef <- ggplot(top_math, aes(mean_coef, label, fill = mean_coef > 0)) +
   theme_minimal(base_size = 9)
 ggsave("plots/lasso_top_items_math.png", p_coef, width = 9, height = 5.5, dpi = 150)
 
-# 6. Markdown table to paste into README.md ----------------------------------
-
+# 6. Markdown table to paste into README.md 
 fmt <- function(m, lo, hi, digits) {
   sprintf(paste0("%.", digits, "f (%.", digits, "f–%.", digits, "f)"), m, lo, hi)
 }
