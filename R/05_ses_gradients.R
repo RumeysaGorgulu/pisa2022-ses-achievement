@@ -41,8 +41,8 @@ grad <- bind_rows(
   gradient(usa, "ST255Q01JA",
            c("0", "1-10", "11-25", "26-100", "101-200", "201-500", "500+"),
            "By number of books at home"),
-  gradient(usa, "ST258Q01JA",
-           c("Never", "Weekly", "2-3/week", "4-5/week", "Daily"),
+  gradient(usa %>% mutate(food = pmin(round(ST258Q01JA), 4)), "food",
+           c("Never", "Weekly", "2-3/week", "4+/week"),
            "By how often they skipped meals (no money for food)")
 ) %>%
   mutate(panel = factor(panel, levels = unique(panel)),
