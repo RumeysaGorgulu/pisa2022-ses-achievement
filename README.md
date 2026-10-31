@@ -2,9 +2,9 @@
 
 R pipeline that measures how well socioeconomic (SES) survey items predict 15-year-olds' math, reading and science scores in the OECD PISA 2022 data (80 education systems, ~614,000 students), and which items matter most.
 
-<a href="https://rumeysagorgulu.github.io/pisa2022-ses-achievement/"><img src="plots/showcase_map_math.png" width="100%" alt="PISA 2022 math performance around the world"></a>
+<a href="https://rpubs.com/RumeysaGorgulu/pisa2022-visualization"><img src="plots/showcase_map_math.png" width="100%" alt="PISA 2022 math performance around the world"></a>
 
-<p align="center"><a href="https://rumeysagorgulu.github.io/pisa2022-ses-achievement/"><b>Explore the interactive map</b></a>: switch between math, reading and science, and hover over any country.</p>
+<p align="center"><a href="https://rpubs.com/RumeysaGorgulu/pisa2022-visualization"><b>Explore the interactive maps</b></a> on RPubs and hover over any country for details.</p>
 
 **Question:** How much achievement variance can home and family background items predict on unseen students, and does a non-linear model (KNN) predict better than a linear one?
 
@@ -43,23 +43,29 @@ Values are means across the 10 plausible values, with the min–max range in par
 
 ![Model comparison](plots/showcase_models.png)
 
-### What LASSO kept
+### Family background and math scores
 
-![Top LASSO items for math](plots/showcase_lasso_math.png)
+![SES gradients](plots/showcase_gradients.png)
 
-Parental education at the highest level, books and household resources carry the strongest positive signal; food insecurity is negative. Each coefficient is net of the other selected items, so some related items (for example, a parent's bachelor's degree alongside a doctorate) take negative values.
+The same story from three angles: U.S. students from the top ESCS decile, with the most books at home, or who never skipped meals score far higher in math than their peers at the other end.
 
 <details>
-<summary><b>More figures</b>: reading and science maps, LASSO cross-validation, KNN residuals, ESCS by country</summary>
+<summary><b>More figures</b>: reading and science maps, LASSO items and cross-validation, KNN residuals, ESCS by country</summary>
 <br>
 
 | Reading | Science |
 |---|---|
 | ![Reading map](plots/showcase_map_reading.png) | ![Science map](plots/showcase_map_science.png) |
 
-| LASSO cross-validation (math) | KNN residuals on the test set (math, PV1) |
+| Strongest LASSO items (math) | LASSO cross-validation (math) |
 |---|---|
-| ![LASSO CV](plots/lasso_cv_math.png) | ![KNN residuals](plots/residual_math.png) |
+| ![LASSO items](plots/showcase_lasso_math.png) | ![LASSO CV](plots/lasso_cv_math.png) |
+
+LASSO coefficients are net of the other selected items, so related items (for example, a parent's bachelor's degree alongside a doctorate) can take negative values.
+
+| KNN residuals on the test set (math, PV1) | |
+|---|---|
+| ![KNN residuals](plots/residual_math.png) | |
 
 | Country mean ESCS vs. math | ESCS by country |
 |---|---|
@@ -74,7 +80,8 @@ Parental education at the highest level, books and household resources carry the
 | 1 | `R/01_data_prep_eda.R` | Converts the 2 GB SPSS file to RDS. Handles missing data (excludes students missing more than 14 items; imputes the rest with country item means; imputes ESCS with country means; excludes Costa Rica, which has no ESCS). Computes weighted country statistics over all 10 PVs. |
 | 2 | `R/02_visualization.R` | ESCS distribution by country; world maps of weighted country mean scores; country-level ESCS vs. math scatter; interactive Plotly versions |
 | 3 | `R/03_modeling.R` | Per subject × PV: LASSO selection, then OLS / KNN fit and test-set scoring; pooled metrics, LASSO selection frequencies, figures, and a Markdown results table |
-| 4 | `R/04_showcase_figures.R` | README figures and the interactive map (`docs/index.html`), built from the result files only |
+| 4 | `R/04_showcase_figures.R` | README maps, model comparison and LASSO item chart, built from the result files only |
+| 5 | `R/05_ses_gradients.R` | Weighted U.S. math scores by ESCS decile, books at home and food insecurity |
 
 Outputs go to `results/` (CSV tables) and `plots/` (figures).
 
@@ -101,11 +108,12 @@ Outputs go to `results/` (CSV tables) and `plots/` (figures).
    Rscript R/02_visualization.R
    Rscript R/03_modeling.R
    Rscript R/04_showcase_figures.R
+   Rscript R/05_ses_gradients.R
    ```
    Step 3 takes about 10–20 minutes.
 
 ## Changelog
-- **v2.1:** new README figures (readable LASSO item labels, model comparison, larger maps) and an interactive map hosted with GitHub Pages
+- **v2.1:** new README figures: larger maps, model comparison and SES gradients
 - **v2:**
   - Fixed target leakage: an earlier version let the KNN models use the other subjects' scores as predictors, which inflated R² to about 0.7
   - Models are now fit per plausible value
